@@ -47,7 +47,7 @@ function productsQuery(search: ProductSearch) {
   });
 }
 
-export const Route = createFileRoute("/produkty")({
+export const Route = createFileRoute("/produkty/")({
   validateSearch: searchSchema,
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }) => {
