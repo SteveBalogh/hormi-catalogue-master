@@ -21,8 +21,8 @@ export type ProductDTO = {
   specifications: Spec[];
   documents: DocLink[];
   sort_order: number;
-  created_at?: string;
-  updated_at?: string;
+  created_at?: string | undefined;
+  updated_at?: string | undefined;
 };
 
 export type CategoryDTO = {
