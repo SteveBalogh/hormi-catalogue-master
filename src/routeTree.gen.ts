@@ -10,7 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as ONasRouteImport } from './routes/o-nas'
+import { Route as KategorieIndexRouteImport } from './routes/kategorie/index'
+import { Route as KategorieSlugRouteImport } from './routes/kategorie/$slug'
 import { Route as ProduktyIndexRouteImport } from './routes/produkty/index'
+import { Route as ProduktySlugRouteImport } from './routes/produkty/$slug'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +23,34 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ONasRoute = ONasRouteImport.update({
+  id: '/o-nas',
+  path: '/o-nas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KategorieIndexRoute = KategorieIndexRouteImport.update({
+  id: '/kategorie/',
+  path: '/kategorie/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KategorieSlugRoute = KategorieSlugRouteImport.update({
+  id: '/kategorie/$slug',
+  path: '/kategorie/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProduktyIndexRoute = ProduktyIndexRouteImport.update({
   id: '/produkty/',
   path: '/produkty/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProduktySlugRoute = ProduktySlugRouteImport.update({
+  id: '/produkty/$slug',
+  path: '/produkty/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
@@ -31,30 +61,75 @@ const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
+  '/kategorie/$slug': typeof KategorieSlugRoute
+  '/produkty/$slug': typeof ProduktySlugRoute
+  '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
+  '/kategorie/$slug': typeof KategorieSlugRoute
+  '/produkty/$slug': typeof ProduktySlugRoute
+  '/kategorie': typeof KategorieIndexRoute
   '/produkty': typeof ProduktyIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
+  '/kategorie/$slug': typeof KategorieSlugRoute
+  '/produkty/$slug': typeof ProduktySlugRoute
+  '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/produkty/' | '/api/public/media/$'
+  fullPaths:
+    | '/'
+    | '/kontakt'
+    | '/o-nas'
+    | '/kategorie/$slug'
+    | '/produkty/$slug'
+    | '/kategorie/'
+    | '/produkty/'
+    | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/produkty' | '/api/public/media/$'
-  id: '__root__' | '/' | '/produkty/' | '/api/public/media/$'
+  to:
+    | '/'
+    | '/kontakt'
+    | '/o-nas'
+    | '/kategorie/$slug'
+    | '/produkty/$slug'
+    | '/kategorie'
+    | '/produkty'
+    | '/api/public/media/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/kontakt'
+    | '/o-nas'
+    | '/kategorie/$slug'
+    | '/produkty/$slug'
+    | '/kategorie/'
+    | '/produkty/'
+    | '/api/public/media/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  KontaktRoute: typeof KontaktRoute
+  ONasRoute: typeof ONasRoute
+  KategorieSlugRoute: typeof KategorieSlugRoute
+  ProduktySlugRoute: typeof ProduktySlugRoute
+  KategorieIndexRoute: typeof KategorieIndexRoute
   ProduktyIndexRoute: typeof ProduktyIndexRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
@@ -68,11 +143,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/o-nas': {
+      id: '/o-nas'
+      path: '/o-nas'
+      fullPath: '/o-nas'
+      preLoaderRoute: typeof ONasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kategorie/': {
+      id: '/kategorie/'
+      path: '/kategorie'
+      fullPath: '/kategorie/'
+      preLoaderRoute: typeof KategorieIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kategorie/$slug': {
+      id: '/kategorie/$slug'
+      path: '/kategorie/$slug'
+      fullPath: '/kategorie/$slug'
+      preLoaderRoute: typeof KategorieSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produkty/': {
       id: '/produkty/'
       path: '/produkty'
       fullPath: '/produkty/'
       preLoaderRoute: typeof ProduktyIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produkty/$slug': {
+      id: '/produkty/$slug'
+      path: '/produkty/$slug'
+      fullPath: '/produkty/$slug'
+      preLoaderRoute: typeof ProduktySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/media/$': {
@@ -87,6 +197,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  KontaktRoute: KontaktRoute,
+  ONasRoute: ONasRoute,
+  KategorieSlugRoute: KategorieSlugRoute,
+  ProduktySlugRoute: ProduktySlugRoute,
+  KategorieIndexRoute: KategorieIndexRoute,
   ProduktyIndexRoute: ProduktyIndexRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
