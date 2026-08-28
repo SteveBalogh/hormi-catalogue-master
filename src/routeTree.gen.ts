@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KategorieIndexRouteImport } from './routes/kategorie/index'
 import { Route as ProduktyIndexRouteImport } from './routes/produkty/index'
 import { Route as ProduktySlugRouteImport } from './routes/produkty/$slug'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
@@ -17,6 +18,11 @@ import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/med
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KategorieIndexRoute = KategorieIndexRouteImport.update({
+  id: '/kategorie/',
+  path: '/kategorie/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProduktyIndexRoute = ProduktyIndexRouteImport.update({
@@ -38,12 +44,14 @@ const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/produkty/$slug': typeof ProduktySlugRoute
+  '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/produkty/$slug': typeof ProduktySlugRoute
+  '/kategorie': typeof KategorieIndexRoute
   '/produkty': typeof ProduktyIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -51,21 +59,34 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/produkty/$slug': typeof ProduktySlugRoute
+  '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/produkty/$slug' | '/produkty/' | '/api/public/media/$'
+  fullPaths:
+    | '/'
+    | '/produkty/$slug'
+    | '/kategorie/'
+    | '/produkty/'
+    | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/produkty/$slug' | '/produkty' | '/api/public/media/$'
+  to:
+    '/' | '/produkty/$slug' | '/kategorie' | '/produkty' | '/api/public/media/$'
   id:
-    '__root__' | '/' | '/produkty/$slug' | '/produkty/' | '/api/public/media/$'
+    | '__root__'
+    | '/'
+    | '/produkty/$slug'
+    | '/kategorie/'
+    | '/produkty/'
+    | '/api/public/media/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProduktySlugRoute: typeof ProduktySlugRoute
+  KategorieIndexRoute: typeof KategorieIndexRoute
   ProduktyIndexRoute: typeof ProduktyIndexRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
@@ -77,6 +98,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kategorie/': {
+      id: '/kategorie/'
+      path: '/kategorie'
+      fullPath: '/kategorie/'
+      preLoaderRoute: typeof KategorieIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produkty/': {
@@ -106,6 +134,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProduktySlugRoute: ProduktySlugRoute,
+  KategorieIndexRoute: KategorieIndexRoute,
   ProduktyIndexRoute: ProduktyIndexRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
