@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as ONasRouteImport } from './routes/o-nas'
 import { Route as KategorieIndexRouteImport } from './routes/kategorie/index'
 import { Route as KategorieSlugRouteImport } from './routes/kategorie/$slug'
 import { Route as ProduktyIndexRouteImport } from './routes/produkty/index'
@@ -25,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const KontaktRoute = KontaktRouteImport.update({
   id: '/kontakt',
   path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ONasRoute = ONasRouteImport.update({
+  id: '/o-nas',
+  path: '/o-nas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KategorieIndexRoute = KategorieIndexRouteImport.update({
@@ -56,6 +62,7 @@ const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
   '/kategorie/$slug': typeof KategorieSlugRoute
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie/': typeof KategorieIndexRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
   '/kategorie/$slug': typeof KategorieSlugRoute
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie': typeof KategorieIndexRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
   '/kategorie/$slug': typeof KategorieSlugRoute
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie/': typeof KategorieIndexRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/kontakt'
+    | '/o-nas'
     | '/kategorie/$slug'
     | '/produkty/$slug'
     | '/kategorie/'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/kontakt'
+    | '/o-nas'
     | '/kategorie/$slug'
     | '/produkty/$slug'
     | '/kategorie'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/kontakt'
+    | '/o-nas'
     | '/kategorie/$slug'
     | '/produkty/$slug'
     | '/kategorie/'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   KontaktRoute: typeof KontaktRoute
+  ONasRoute: typeof ONasRoute
   KategorieSlugRoute: typeof KategorieSlugRoute
   ProduktySlugRoute: typeof ProduktySlugRoute
   KategorieIndexRoute: typeof KategorieIndexRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/kontakt'
       fullPath: '/kontakt'
       preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/o-nas': {
+      id: '/o-nas'
+      path: '/o-nas'
+      fullPath: '/o-nas'
+      preLoaderRoute: typeof ONasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kategorie/': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   KontaktRoute: KontaktRoute,
+  ONasRoute: ONasRoute,
   KategorieSlugRoute: KategorieSlugRoute,
   ProduktySlugRoute: ProduktySlugRoute,
   KategorieIndexRoute: KategorieIndexRoute,
