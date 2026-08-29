@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as ONasRouteImport } from './routes/o-nas'
@@ -17,11 +18,16 @@ import { Route as KategorieIndexRouteImport } from './routes/kategorie/index'
 import { Route as KategorieSlugRouteImport } from './routes/kategorie/$slug'
 import { Route as ProduktyIndexRouteImport } from './routes/produkty/index'
 import { Route as ProduktySlugRouteImport } from './routes/produkty/$slug'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -59,6 +65,11 @@ const ProduktySlugRoute = ProduktySlugRouteImport.update({
   path: '/produkty/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
   id: '/api/public/media/$',
   path: '/api/public/media/$',
@@ -74,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesByTo {
@@ -85,11 +97,13 @@ export interface FileRoutesByTo {
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie': typeof KategorieIndexRoute
   '/produkty': typeof ProduktyIndexRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/kontakt': typeof KontaktRoute
   '/o-nas': typeof ONasRoute
@@ -97,6 +111,7 @@ export interface FileRoutesById {
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +125,7 @@ export interface FileRouteTypes {
     | '/produkty/$slug'
     | '/kategorie/'
     | '/produkty/'
+    | '/admin/'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,10 +137,12 @@ export interface FileRouteTypes {
     | '/produkty/$slug'
     | '/kategorie'
     | '/produkty'
+    | '/admin'
     | '/api/public/media/$'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
     | '/kontakt'
     | '/o-nas'
@@ -132,11 +150,13 @@ export interface FileRouteTypes {
     | '/produkty/$slug'
     | '/kategorie/'
     | '/produkty/'
+    | '/_authenticated/admin/'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   KontaktRoute: typeof KontaktRoute
   ONasRoute: typeof ONasRoute
@@ -154,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -205,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProduktySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/media/$': {
       id: '/api/public/media/$'
       path: '/api/public/media/$'
@@ -215,8 +249,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   KontaktRoute: KontaktRoute,
   ONasRoute: ONasRoute,
