@@ -19,6 +19,7 @@ import { Route as KategorieSlugRouteImport } from './routes/kategorie/$slug'
 import { Route as ProduktyIndexRouteImport } from './routes/produkty/index'
 import { Route as ProduktySlugRouteImport } from './routes/produkty/$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin/import'
 import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -70,6 +71,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminImportRoute =
+  AuthenticatedAdminImportRouteImport.update({
+    id: '/admin/import',
+    path: '/admin/import',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
   id: '/api/public/media/$',
   path: '/api/public/media/$',
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -97,6 +105,7 @@ export interface FileRoutesByTo {
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie': typeof KategorieIndexRoute
   '/produkty': typeof ProduktyIndexRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -111,6 +120,7 @@ export interface FileRoutesById {
   '/produkty/$slug': typeof ProduktySlugRoute
   '/kategorie/': typeof KategorieIndexRoute
   '/produkty/': typeof ProduktyIndexRoute
+  '/_authenticated/admin/import': typeof AuthenticatedAdminImportRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/media/$': typeof ApiPublicMediaSplatRoute
 }
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/produkty/$slug'
     | '/kategorie/'
     | '/produkty/'
+    | '/admin/import'
     | '/admin/'
     | '/api/public/media/$'
   fileRoutesByTo: FileRoutesByTo
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/produkty/$slug'
     | '/kategorie'
     | '/produkty'
+    | '/admin/import'
     | '/admin'
     | '/api/public/media/$'
   id:
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
     | '/produkty/$slug'
     | '/kategorie/'
     | '/produkty/'
+    | '/_authenticated/admin/import'
     | '/_authenticated/admin/'
     | '/api/public/media/$'
   fileRoutesById: FileRoutesById
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/import': {
+      id: '/_authenticated/admin/import'
+      path: '/admin/import'
+      fullPath: '/admin/import'
+      preLoaderRoute: typeof AuthenticatedAdminImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/media/$': {
       id: '/api/public/media/$'
       path: '/api/public/media/$'
@@ -250,10 +270,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
