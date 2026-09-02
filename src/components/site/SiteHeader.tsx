@@ -2,20 +2,23 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Phone, Search, X } from "lucide-react";
 import { useState } from "react";
 
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLocale } from "@/lib/i18n";
 import { SITE } from "@/lib/site";
 
 const NAV = [
-  { to: "/", label: "Domov" },
-  { to: "/produkty", label: "Produkty" },
-  { to: "/kategorie", label: "Kategórie" },
-  { to: "/o-nas", label: "O nás" },
-  { to: "/kontakt", label: "Kontakt" },
+  { to: "/", key: "nav.home" },
+  { to: "/produkty", key: "nav.products" },
+  { to: "/kategorie", key: "nav.categories" },
+  { to: "/o-nas", key: "nav.about" },
+  { to: "/kontakt", key: "nav.contact" },
 ] as const;
 
 export function SiteHeader() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
 
@@ -30,9 +33,12 @@ export function SiteHeader() {
       <div className="hidden bg-ink text-ink-foreground md:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 text-xs">
           <span className="tracking-wide uppercase">{SITE.tagline}</span>
-          <a href={`tel:${SITE.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 hover:underline">
-            <Phone className="size-3.5" /> {SITE.phone}
-          </a>
+          <div className="flex items-center gap-4">
+            <a href={`tel:${SITE.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 hover:underline">
+              <Phone className="size-3.5" /> {SITE.phone}
+            </a>
+            <LanguageSwitcher tone="dark" />
+          </div>
         </div>
       </div>
 
@@ -51,7 +57,7 @@ export function SiteHeader() {
               to={item.to}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground [&.active]:text-foreground"
             >
-              {item.label}
+              {t(item.key)}
             </Link>
           ))}
         </nav>
@@ -62,21 +68,21 @@ export function SiteHeader() {
             <Input
               value={term}
               onChange={(e) => setTerm(e.target.value)}
-              placeholder="Hľadať produkt…"
-              aria-label="Hľadať produkt"
+              placeholder={t("search.placeholder")}
+              aria-label={t("search.label")}
               className="pl-9"
             />
           </div>
         </form>
 
         <Button asChild size="sm" className="ml-auto md:ml-2">
-          <Link to="/kontakt">Cenová ponuka</Link>
+          <Link to="/kontakt">{t("nav.quote")}</Link>
         </Button>
 
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Menu"
+          aria-label={t("nav.menu")}
           className="rounded-md p-2 text-foreground lg:hidden"
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -91,8 +97,8 @@ export function SiteHeader() {
               <Input
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
-                placeholder="Hľadať produkt…"
-                aria-label="Hľadať produkt"
+                placeholder={t("search.placeholder")}
+                aria-label={t("search.label")}
                 className="pl-9"
               />
             </div>
@@ -105,10 +111,13 @@ export function SiteHeader() {
                 onClick={() => setOpen(false)}
                 className="border-b border-border/60 py-3 text-sm font-medium text-foreground last:border-0"
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             ))}
           </nav>
+          <div className="pt-4">
+            <LanguageSwitcher />
+          </div>
         </div>
       )}
     </header>
