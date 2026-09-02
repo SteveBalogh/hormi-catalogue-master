@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { formatPrice, imageSrc, type ProductDTO } from "@/lib/catalog-types";
+import { imageSrc, type ProductDTO } from "@/lib/catalog-types";
+import { useLocale } from "@/lib/i18n";
 
 export function ProductCard({ product }: { product: ProductDTO }) {
+  const { t, formatPrice, categoryName, availability } = useLocale();
   const src = imageSrc(product.main_image);
   const price = formatPrice(product.price, product.currency);
 
@@ -28,13 +30,13 @@ export function ProductCard({ product }: { product: ProductDTO }) {
           </div>
         )}
         {product.featured && (
-          <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">Odporúčané</Badge>
+          <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">{t("product.featured")}</Badge>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         {product.category_name && (
           <span className="text-[0.68rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-            {product.category_name}
+            {categoryName(product.category_slug, product.category_name)}
           </span>
         )}
         <h3 className="font-display text-base leading-snug font-semibold text-foreground">{product.name}</h3>
@@ -43,9 +45,11 @@ export function ProductCard({ product }: { product: ProductDTO }) {
         )}
         <div className="mt-auto flex items-end justify-between pt-3">
           <span className="font-display text-lg font-bold text-foreground">
-            {price ?? <span className="text-sm font-medium text-muted-foreground">Cena na vyžiadanie</span>}
+            {price ?? <span className="text-sm font-medium text-muted-foreground">{t("product.priceOnRequest")}</span>}
           </span>
-          {product.availability && <span className="text-xs text-muted-foreground">{product.availability}</span>}
+          {product.availability && (
+            <span className="text-xs text-muted-foreground">{availability(product.availability)}</span>
+          )}
         </div>
       </div>
     </Link>
