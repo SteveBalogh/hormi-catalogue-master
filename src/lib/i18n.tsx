@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { EXTRA } from "./i18n-extra";
+
 export const LOCALES = ["sk", "hu", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "sk";
@@ -298,7 +300,11 @@ const en: Dict = {
   "contact.hours": "Opening hours",
 };
 
-const DICTS: Record<Locale, Dict> = { sk, hu, en };
+const DICTS: Record<Locale, Dict> = {
+  sk: { ...sk, ...EXTRA.sk },
+  hu: { ...hu, ...EXTRA.hu },
+  en: { ...en, ...EXTRA.en },
+};
 
 /** Localized catalogue category copy keyed by stable slug; falls back to stored values. */
 const CATEGORY_COPY: Record<string, Partial<Record<Locale, { name: string; description?: string }>>> = {

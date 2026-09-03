@@ -6,6 +6,8 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { getCategoryBySlug, getProducts } from "@/lib/catalog.functions";
+import { categoryImage } from "@/lib/category-images";
+import { useLocale } from "@/lib/i18n";
 
 function categoryQuery(slug: string) {
   return queryOptions({
@@ -47,60 +49,74 @@ export const Route = createFileRoute("/kategorie/$slug")({
     };
   },
   component: CategoryPage,
-  errorComponent: () => (
-    <div className="p-10 text-center text-muted-foreground">Kategóriu sa nepodarilo načítať.</div>
-  ),
-  notFoundComponent: () => (
+  errorComponent: () => <div className="p-10 text-center text-muted-foreground">Kategóriu sa nepodarilo načítať.</div>,
+  notFoundComponent: () => <CategoryNotFound />,
+});
+
+function CategoryNotFound() {
+  const { t } = useLocale();
+  return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="mx-auto flex max-w-3xl flex-1 flex-col items-center justify-center px-4 py-24 text-center">
-        <h1 className="font-display text-3xl font-extrabold">Kategóriu sme nenašli</h1>
+        <h1 className="font-display text-3xl font-extrabold">{t("category.notFoundTitle")}</h1>
         <Button asChild className="mt-6">
-          <Link to="/kategorie">Všetky kategórie</Link>
+          <Link to="/kategorie">{t("home.allCategories")}</Link>
         </Button>
       </main>
       <SiteFooter />
     </div>
-  ),
-});
+  );
+}
 
 function CategoryPage() {
   const { slug } = Route.useParams();
   const { data: category } = useSuspenseQuery(categoryQuery(slug));
   const { data: products } = useSuspenseQuery(categoryProductsQuery(slug));
+  const { t, categoryName, categoryDescription } = useLocale();
 
   if (!category) return null;
+  const label = categoryName(category.slug, category.name);
+  const description = categoryDescription(category.slug, category.description);
+  const src = categoryImage(category.slug, category.image_url);
 
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
-        <nav aria-label="Navigácia" className="text-xs text-muted-foreground">
+        <nav aria-label={t("common.breadcrumb")} className="text-xs text-muted-foreground">
           <Link to="/" className="hover:underline">
-            Domov
+            {t("nav.home")}
           </Link>{" "}
           /{" "}
           <Link to="/kategorie" className="hover:underline">
-            Kategórie
+            {t("nav.categories")}
           </Link>{" "}
-          / <span className="text-foreground">{category.name}</span>
+          / <span className="text-foreground">{label}</span>
         </nav>
 
-        <h1 className="font-display mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{category.name}</h1>
-        {category.description && (
-          <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{category.description}</p>
-        )}
-        <div className="mt-5">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/produkty" search={{ category: slug }}>
-              Filtrovať v katalógu
-            </Link>
-          </Button>
+        <div className="mt-4 grid gap-6 sm:grid-cols-[minmax(0,1fr)_260px] sm:items-center">
+          <div>
+            <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">{label}</h1>
+            {description && <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{description}</p>}
+            <div className="mt-5">
+              <Button asChild variant="outline" size="sm">
+                <Link to="/produkty" search={{ category: slug }}>
+                  {t("category.filterInCatalogue")}
+                </Link>
+              </Button>
+            </div>
+          </div>
+          {src && (
+            <div className="aspect-4/3 overflow-hidden rounded-xl border border-border bg-secondary">
+              <img src={src} alt={`HORMI ${label}`} loading="lazy" className="size-full object-cover" />
+            </div>
+          )}
         </div>
 
         {products.items.length === 0 ? (
           <div className="mt-10 rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-            V tejto kategórii momentálne nemáme zverejnené produkty.
+            {t("category.empty")}
           </div>
         ) : (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
