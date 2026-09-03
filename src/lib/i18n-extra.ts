@@ -1,4 +1,4 @@
-import type { Locale } from "./i18n-locale";
+type Locale = "sk" | "hu" | "en";
 
 /** Additional strings for detail routes, kept separate to stay readable. */
 export const EXTRA: Record<Locale, Record<string, string>> = {
