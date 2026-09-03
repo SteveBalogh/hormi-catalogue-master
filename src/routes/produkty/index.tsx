@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SORT_OPTIONS } from "@/lib/catalog-types";
 import { getCategories, getProducts } from "@/lib/catalog.functions";
+import { useLocale } from "@/lib/i18n";
 
 const searchSchema = z.object({
   q: z.string().optional(),
@@ -85,6 +86,7 @@ function ProductsPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const { data: categories } = useSuspenseQuery(categoriesQuery);
   const { data } = useSuspenseQuery(productsQuery(search));
+  const { t, categoryName } = useLocale();
   const [term, setTerm] = useState(search.q ?? "");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -103,18 +105,17 @@ function ProductsPage() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
-        <nav aria-label="Navigácia" className="text-xs text-muted-foreground">
+        <nav aria-label={t("common.breadcrumb")} className="text-xs text-muted-foreground">
           <Link to="/" className="hover:underline">
-            Domov
+            {t("nav.home")}
           </Link>{" "}
-          / <span className="text-foreground">Produkty</span>
+          / <span className="text-foreground">{t("nav.products")}</span>
         </nav>
         <h1 className="font-display mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-          Katalóg produktov
+          {t("products.title")}
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          {data.total} produktov pripravených na dodanie alebo na objednávku. Filtrujte podľa kategórie alebo hľadajte
-          podľa názvu a kódu.
+          {data.total} {t("products.intro")}
         </p>
 
         <form
@@ -129,13 +130,13 @@ function ProductsPage() {
             <Input
               value={term}
               onChange={(e) => setTerm(e.target.value)}
-              placeholder="Hľadať podľa názvu, popisu alebo kódu…"
-              aria-label="Hľadať v katalógu"
+              placeholder={t("search.cataloguePlaceholder")}
+              aria-label={t("search.catalogueLabel")}
               className="pl-9"
             />
           </div>
           <div className="flex gap-2">
-            <Button type="submit">Hľadať</Button>
+            <Button type="submit">{t("search.submit")}</Button>
             <Button
               type="button"
               variant="outline"
@@ -143,7 +144,7 @@ function ProductsPage() {
               onClick={() => setFiltersOpen((v) => !v)}
               aria-expanded={filtersOpen}
             >
-              <SlidersHorizontal className="size-4" /> Filtre
+              <SlidersHorizontal className="size-4" /> {t("products.filters")}
             </Button>
           </div>
         </form>
@@ -151,7 +152,7 @@ function ProductsPage() {
         <div className="mt-8 grid gap-8 lg:grid-cols-[240px_1fr]">
           <aside className={`${filtersOpen ? "block" : "hidden"} lg:block`}>
             <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">Kategórie</h2>
+              <h2 className="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">{t("products.categories")}</h2>
               <ul className="mt-3 space-y-1">
                 <li>
                   <button
@@ -159,7 +160,7 @@ function ProductsPage() {
                     onClick={() => update({ category: undefined })}
                     className={`w-full rounded-md px-2 py-1.5 text-left text-sm ${!search.category ? "bg-secondary font-semibold text-foreground" : "text-muted-foreground hover:bg-secondary/60"}`}
                   >
-                    Všetky
+                    {t("products.all")}
                   </button>
                 </li>
                 {categories.map((c) => (
@@ -169,14 +170,14 @@ function ProductsPage() {
                       onClick={() => update({ category: c.slug })}
                       className={`flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-sm ${search.category === c.slug ? "bg-secondary font-semibold text-foreground" : "text-muted-foreground hover:bg-secondary/60"}`}
                     >
-                      <span>{c.name}</span>
+                      <span>{categoryName(c.slug, c.name)}</span>
                       <span className="text-xs text-muted-foreground">{c.product_count}</span>
                     </button>
                   </li>
                 ))}
               </ul>
 
-              <h2 className="mt-6 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">Výber</h2>
+              <h2 className="mt-6 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">{t("products.selection")}</h2>
               <label className="mt-3 flex items-center gap-2 text-sm text-foreground">
                 <input
                   type="checkbox"
@@ -184,7 +185,7 @@ function ProductsPage() {
                   onChange={(e) => update({ featured: e.target.checked || undefined })}
                   className="size-4 accent-[var(--primary)]"
                 />
-                Len odporúčané
+                {t("products.onlyFeatured")}
               </label>
             </div>
           </aside>
@@ -192,16 +193,16 @@ function ProductsPage() {
           <section>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-muted-foreground">
-                Zobrazené {data.items.length} z {data.total}
+                {t("products.showing")} {data.items.length} {t("products.of")} {data.total}
               </p>
               <Select value={search.sort ?? "recommended"} onValueChange={(v) => update({ sort: v })}>
-                <SelectTrigger className="w-56" aria-label="Zoradenie">
+                <SelectTrigger className="w-56" aria-label={t("products.sortLabel")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {SORT_OPTIONS.map((o) => (
                     <SelectItem key={o.value} value={o.value}>
-                      {o.label}
+                      {t(`sort.${o.value}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -210,9 +211,9 @@ function ProductsPage() {
 
             {data.items.length === 0 ? (
               <div className="mt-10 rounded-xl border border-dashed border-border p-10 text-center">
-                <p className="font-display text-lg font-semibold text-foreground">Žiadne produkty</p>
+                <p className="font-display text-lg font-semibold text-foreground">{t("products.emptyTitle")}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Skúste iné hľadané slovo alebo zrušte filtre.
+                  {t("products.emptyText")}
                 </p>
               </div>
             ) : (
@@ -230,7 +231,7 @@ function ProductsPage() {
                   disabled={page <= 1}
                   onClick={() => void navigate({ search: (prev) => ({ ...prev, page: page - 1 }) })}
                 >
-                  Predchádzajúca
+                  {t("products.prev")}
                 </Button>
                 <span className="text-sm text-muted-foreground">
                   {page} / {totalPages}
@@ -240,7 +241,7 @@ function ProductsPage() {
                   disabled={page >= totalPages}
                   onClick={() => void navigate({ search: (prev) => ({ ...prev, page: page + 1 }) })}
                 >
-                  Ďalšia
+                  {t("products.next")}
                 </Button>
               </div>
             )}
