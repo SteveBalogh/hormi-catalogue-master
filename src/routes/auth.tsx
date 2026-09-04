@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
+import { useLocale } from "@/lib/i18n";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -24,6 +26,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +45,7 @@ function AuthPage() {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        toast.success("Prihlásenie úspešné");
+        toast.success(t("auth.success"));
         await navigate({ to: "/admin", replace: true });
       } else {
         const { error } = await supabase.auth.signUp({
@@ -51,11 +54,11 @@ function AuthPage() {
           options: { emailRedirectTo: `${window.location.origin}/auth` },
         });
         if (error) throw error;
-        toast.success("Účet vytvorený. Skontrolujte e-mail pre potvrdenie.");
+        toast.success(t("auth.created"));
         setMode("signin");
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Prihlásenie sa nepodarilo");
+      toast.error(error instanceof Error ? error.message : t("auth.failed"));
     } finally {
       setBusy(false);
     }
@@ -68,15 +71,16 @@ function AuthPage() {
           HORMI
         </Link>
         <h1 className="font-display mt-6 text-2xl font-bold tracking-tight">
-          {mode === "signin" ? "Prihlásenie do administrácie" : "Vytvoriť účet"}
+          {mode === "signin" ? t("auth.signInTitle") : t("auth.signUpTitle")}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Správa katalógu, produktov a importov. Prístup majú len účty s rolou administrátora.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("auth.intro")}</p>
+        <div className="mt-4">
+          <LanguageSwitcher />
+        </div>
 
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email">{t("auth.email")}</Label>
             <Input
               id="email"
               type="email"
@@ -87,7 +91,7 @@ function AuthPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Heslo</Label>
+            <Label htmlFor="password">{t("auth.password")}</Label>
             <Input
               id="password"
               type="password"
@@ -99,7 +103,7 @@ function AuthPage() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={busy}>
-            {busy ? "Spracúvam…" : mode === "signin" ? "Prihlásiť sa" : "Registrovať"}
+            {busy ? t("auth.busy") : mode === "signin" ? t("auth.signIn") : t("auth.signUp")}
           </Button>
         </form>
 
@@ -108,11 +112,11 @@ function AuthPage() {
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           className="mt-4 w-full text-sm text-muted-foreground hover:text-foreground hover:underline"
         >
-          {mode === "signin" ? "Nemáte účet? Zaregistrujte sa" : "Už máte účet? Prihláste sa"}
+          {mode === "signin" ? t("auth.toSignUp") : t("auth.toSignIn")}
         </button>
 
         <Link to="/" className="mt-6 block text-center text-xs text-muted-foreground hover:underline">
-          Späť na stránku
+          {t("auth.backToSite")}
         </Link>
       </div>
     </div>
