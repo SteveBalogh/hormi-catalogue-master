@@ -8,8 +8,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatPrice, imageSrc } from "@/lib/catalog-types";
+import { imageSrc } from "@/lib/catalog-types";
 import { getProductBySlug } from "@/lib/catalog.functions";
+import { useLocale } from "@/lib/i18n";
 import { SITE } from "@/lib/site";
 
 function productQuery(slug: string) {
@@ -43,30 +44,37 @@ export const Route = createFileRoute("/produkty/$slug")({
     };
   },
   component: ProductPage,
-  errorComponent: () => (
-    <div className="p-10 text-center text-muted-foreground">Produkt sa nepodarilo načítať.</div>
-  ),
-  notFoundComponent: () => (
+  errorComponent: () => <ProductLoadError />,
+  notFoundComponent: () => <ProductNotFound />,
+});
+
+function ProductLoadError() {
+  const { t } = useLocale();
+  return <div className="p-10 text-center text-muted-foreground">{t("product.loadError")}</div>;
+}
+
+function ProductNotFound() {
+  const { t } = useLocale();
+  return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="mx-auto flex max-w-3xl flex-1 flex-col items-center justify-center px-4 py-24 text-center">
-        <h1 className="font-display text-3xl font-extrabold">Produkt sme nenašli</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Produkt bol možno odstránený alebo presunutý do archívu.
-        </p>
+        <h1 className="font-display text-3xl font-extrabold">{t("product.notFoundTitle")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{t("product.notFoundText")}</p>
         <Button asChild className="mt-6">
-          <Link to="/produkty">Späť do katalógu</Link>
+          <Link to="/produkty">{t("product.backToCatalogue")}</Link>
         </Button>
       </main>
       <SiteFooter />
     </div>
-  ),
-});
+  );
+}
 
 function ProductPage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(productQuery(slug));
   const [active, setActive] = useState(0);
+  const { t, formatPrice, categoryName, availability } = useLocale();
 
   if (!data) return null;
   const { product, related } = data;
@@ -80,13 +88,13 @@ function ProductPage() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
-        <nav aria-label="Navigácia" className="text-xs text-muted-foreground">
+        <nav aria-label={t("common.breadcrumb")} className="text-xs text-muted-foreground">
           <Link to="/" className="hover:underline">
-            Domov
+            {t("nav.home")}
           </Link>{" "}
           /{" "}
           <Link to="/produkty" className="hover:underline">
-            Produkty
+            {t("nav.products")}
           </Link>{" "}
           {product.category_slug && product.category_name ? (
             <>
@@ -96,7 +104,7 @@ function ProductPage() {
                 params={{ slug: product.category_slug }}
                 className="hover:underline"
               >
-                {product.category_name}
+                {categoryName(product.category_slug, product.category_name)}
               </Link>{" "}
             </>
           ) : null}
@@ -121,7 +129,7 @@ function ProductPage() {
                     key={`${img}-${i}`}
                     type="button"
                     onClick={() => setActive(i)}
-                    aria-label={`Obrázok ${i + 1}`}
+                    aria-label={`${t("product.imageLabel")} ${i + 1}`}
                     className={`size-20 overflow-hidden rounded-md border ${i === active ? "border-accent" : "border-border"}`}
                   >
                     <img src={imageSrc(img) ?? ""} alt="" className="size-full object-cover" />
@@ -132,12 +140,14 @@ function ProductPage() {
           </div>
 
           <div>
-            {product.category_name && <p className="eyebrow">{product.category_name}</p>}
+            {product.category_name && (
+              <p className="eyebrow">{categoryName(product.category_slug, product.category_name)}</p>
+            )}
             <h1 className="font-display mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{product.name}</h1>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              {product.sku && <Badge variant="outline">Kód: {product.sku}</Badge>}
-              {product.availability && <Badge variant="secondary">{product.availability}</Badge>}
-              {product.featured && <Badge>Odporúčané</Badge>}
+              {product.sku && <Badge variant="outline">{t("product.sku")}: {product.sku}</Badge>}
+              {product.availability && <Badge variant="secondary">{availability(product.availability)}</Badge>}
+              {product.featured && <Badge>{t("product.featured")}</Badge>}
             </div>
             {product.short_description && (
               <p className="mt-4 text-base text-muted-foreground">{product.short_description}</p>
@@ -145,9 +155,9 @@ function ProductPage() {
 
             <div className="mt-6 rounded-xl border border-border bg-card p-5">
               <p className="font-display text-3xl font-bold">
-                {price ?? <span className="text-lg font-semibold text-muted-foreground">Cena na vyžiadanie</span>}
+                {price ?? <span className="text-lg font-semibold text-muted-foreground">{t("product.priceOnRequest")}</span>}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">Ceny sú vrátane DPH. Množstevné zľavy na dopyt.</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("product.priceNote")}</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button asChild>
                   <a href={`tel:${SITE.phone.replace(/\s/g, "")}`}>
@@ -155,8 +165,8 @@ function ProductPage() {
                   </a>
                 </Button>
                 <Button asChild variant="outline">
-                  <a href={`mailto:${SITE.email}?subject=${encodeURIComponent(`Cenová ponuka: ${product.name}`)}`}>
-                    <Mail className="size-4" /> Vyžiadať ponuku
+                  <a href={`mailto:${SITE.email}?subject=${encodeURIComponent(`${t("quote.subject")}: ${product.name}`)}`}>
+                    <Mail className="size-4" /> {t("product.requestQuote")}
                   </a>
                 </Button>
               </div>
@@ -164,7 +174,7 @@ function ProductPage() {
 
             {product.specifications.length > 0 && (
               <section className="mt-8">
-                <h2 className="font-display text-lg font-semibold">Technické parametre</h2>
+                <h2 className="font-display text-lg font-semibold">{t("product.specifications")}</h2>
                 <dl className="mt-3 divide-y divide-border rounded-xl border border-border">
                   {product.specifications.map((s, i) => (
                     <div key={`${s.label}-${i}`} className="grid grid-cols-2 gap-4 px-4 py-2.5 text-sm">
@@ -178,7 +188,7 @@ function ProductPage() {
 
             {product.documents.length > 0 && (
               <section className="mt-8">
-                <h2 className="font-display text-lg font-semibold">Dokumenty</h2>
+                <h2 className="font-display text-lg font-semibold">{t("product.documents")}</h2>
                 <ul className="mt-3 space-y-2 text-sm">
                   {product.documents.map((d, i) => (
                     <li key={`${d.url}-${i}`}>
@@ -195,7 +205,7 @@ function ProductPage() {
 
         {product.description && (
           <section className="mt-14 max-w-3xl">
-            <h2 className="font-display text-xl font-semibold">Popis produktu</h2>
+            <h2 className="font-display text-xl font-semibold">{t("product.descriptionTitle")}</h2>
             <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
               {product.description.split(/\n+/).map((p, i) => (
                 <p key={i}>{p}</p>
@@ -206,7 +216,7 @@ function ProductPage() {
 
         {related.length > 0 && (
           <section className="mt-16">
-            <h2 className="font-display text-xl font-semibold">Súvisiace produkty</h2>
+            <h2 className="font-display text-xl font-semibold">{t("product.related")}</h2>
             <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} />
