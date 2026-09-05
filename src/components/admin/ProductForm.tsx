@@ -39,6 +39,7 @@ type FormState = {
   short_description: string;
   description: string;
   price: string;
+  price_on_request: boolean;
   currency: string;
   status: string;
   availability: string;
@@ -59,6 +60,7 @@ function toForm(product: ProductDTO | null): FormState {
     short_description: product?.short_description ?? "",
     description: product?.description ?? "",
     price: product?.price != null ? String(product.price) : "",
+    price_on_request: product?.price == null,
     currency: product?.currency ?? "EUR",
     status: product?.status ?? "active",
     availability: product?.availability ?? "",
@@ -93,7 +95,11 @@ export function ProductForm({
       const name = form.name.trim();
       if (name.length < 2) throw new Error("Zadajte názov produktu.");
       const slug = (form.slug.trim() || slugify(name)).slice(0, 120);
-      const price = form.price.trim() === "" ? null : Number(form.price.replace(",", "."));
+      const price = form.price_on_request
+        ? null
+        : form.price.trim() === ""
+          ? null
+          : Number(form.price.replace(",", "."));
       if (price !== null && (Number.isNaN(price) || price < 0)) throw new Error("Neplatná cena.");
 
       return saveFn({
@@ -222,9 +228,17 @@ export function ProductForm({
             id="price"
             inputMode="decimal"
             value={form.price}
+            disabled={form.price_on_request}
             onChange={(e) => set("price", e.target.value)}
-            placeholder="Prázdne = na vyžiadanie"
+            placeholder="0,00"
           />
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Switch
+              checked={form.price_on_request}
+              onCheckedChange={(v) => set("price_on_request", v)}
+            />
+            Cena na dopyt (bez ceny)
+          </label>
         </div>
         <div className="space-y-2">
           <Label htmlFor="availability">Dostupnosť</Label>
