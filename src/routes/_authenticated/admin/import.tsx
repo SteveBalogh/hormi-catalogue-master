@@ -210,6 +210,10 @@ function AdminImport() {
         </div>
         <p className="mt-3 text-sm text-muted-foreground">
           Produkty sa párujú podľa kódu (SKU), inak podľa slug-u — existujúce záznamy sa aktualizujú, nové sa vytvoria.
+          Potrebujete vzor?{" "}
+          <a href="/import-vzor.xlsx" download className="font-semibold text-primary hover:underline">
+            Stiahnuť vzorový súbor (.xlsx)
+          </a>
         </p>
       </div>
 
