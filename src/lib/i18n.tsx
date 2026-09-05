@@ -37,7 +37,7 @@ const sk: Dict = {
   "footer.rights": "Všetky práva vyhradené.",
 
   "product.featured": "Odporúčané",
-  "product.priceOnRequest": "Cena na vyžiadanie",
+  "product.priceOnRequest": "Na dopyt",
   "product.specifications": "Technické parametre",
   "product.documents": "Dokumenty",
   "product.related": "Súvisiace produkty",
@@ -133,7 +133,7 @@ const hu: Dict = {
   "footer.rights": "Minden jog fenntartva.",
 
   "product.featured": "Kiemelt",
-  "product.priceOnRequest": "Ár kérésre",
+  "product.priceOnRequest": "Kérésre",
   "product.specifications": "Műszaki paraméterek",
   "product.documents": "Dokumentumok",
   "product.related": "Kapcsolódó termékek",
@@ -229,7 +229,7 @@ const en: Dict = {
   "footer.rights": "All rights reserved.",
 
   "product.featured": "Featured",
-  "product.priceOnRequest": "Price on request",
+  "product.priceOnRequest": "On request",
   "product.specifications": "Specifications",
   "product.documents": "Documents",
   "product.related": "Related products",
