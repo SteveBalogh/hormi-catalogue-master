@@ -9,14 +9,14 @@ type Client = SupabaseClient<Database>;
 const PRODUCT_COLUMNS =
   "id, sku, name, slug, category_id, short_description, description, price, currency, status, availability, featured, main_image, additional_images, specifications, documents, sort_order, created_at, updated_at, categories(name, slug)";
 
-export async function assertAdmin(supabase: Client, userId: string): Promise<void> {
-  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+export async function assertAdmin(supabase: Client, _userId: string): Promise<void> {
+  const { data, error } = await supabase.rpc("current_user_has_role", { _role: "admin" });
   if (error) throw new Error("Nepodarilo sa overiť oprávnenia.");
   if (!data) throw new Error("Prístup zamietnutý: chýba rola admin.");
 }
 
-export async function isAdmin(supabase: Client, userId: string): Promise<boolean> {
-  const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+export async function isAdmin(supabase: Client, _userId: string): Promise<boolean> {
+  const { data } = await supabase.rpc("current_user_has_role", { _role: "admin" });
   return Boolean(data);
 }
 
